@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RainDetector</string>
+    <string name="rain">Rain %s %s</string>
+    <string name="no_rain">No rain</string>
+</resources>
