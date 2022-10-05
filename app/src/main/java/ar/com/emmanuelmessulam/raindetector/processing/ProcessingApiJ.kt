@@ -1,27 +1,29 @@
 package ar.com.emmanuelmessulam.raindetector.processing
 
-import ar.com.emmanuelmessulam.raindetector.NextRain
-import ar.com.emmanuelmessulam.raindetector.SmnApi
+import ar.com.emmanuelmessulam.raindetector.dataclasses.City
+import ar.com.emmanuelmessulam.raindetector.dataclasses.NextRain
+import ar.com.emmanuelmessulam.raindetector.smn.SmnApi
 import arrow.core.Either
-import arrow.core.continuations.either
+import arrow.core.flatMap
 import java.util.*
 
 class ProcessingApiJ(smnApi: SmnApi) : Processing(smnApi) {
-    override suspend fun nextRain(): Either<Exception, NextRain> = either {
-        val probabilities = smnApi.getRainProbabilities().bind()
-        if(probabilities.isEmpty()) {
-            Either.Left(Exception("Empty probablity list")).bind<NextRain>()
-        }
+    override suspend fun nextRain(city: City): Either<Exception, NextRain> {
+        return smnApi.getRainProbabilities(city).flatMap { probabilities ->
+            if(probabilities.isEmpty()) {
+                return Either.Left(Exception("Empty probablity list"))
+            }
 
-        val nextRainIndex = probabilities.indexOfFirst { probability ->
-            probability.high > 0
-        }
+            val nextRainIndex = probabilities.indexOfFirst { probability ->
+                probability.high > 0
+            }
 
-        if (probabilities[nextRainIndex].high == 0F) {
-            return@either NextRain(false, null, null)
-        }
+            if (nextRainIndex != -1 && probabilities[nextRainIndex].high == 0F) {
+                return Either.Right(NextRain(false, null, null))
+            }
 
-        return@either NextRain(true, probabilities[nextRainIndex], addDays(Date(), nextRainIndex))
+            return Either.Right(NextRain(true, probabilities[nextRainIndex], addDays(Date(), nextRainIndex)))
+        }
     }
 
     private fun addDays(date: Date, days: Int): Date {
