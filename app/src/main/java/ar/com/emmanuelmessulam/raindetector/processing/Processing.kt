@@ -1,13 +1,10 @@
 package ar.com.emmanuelmessulam.raindetector.processing
 
-import ar.com.emmanuelmessulam.raindetector.NextRain
-import ar.com.emmanuelmessulam.raindetector.SmnApi
+import ar.com.emmanuelmessulam.raindetector.dataclasses.City
+import ar.com.emmanuelmessulam.raindetector.dataclasses.NextRain
+import ar.com.emmanuelmessulam.raindetector.smn.SmnApi
 import arrow.core.Either
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
-import java.util.*
 
 abstract class Processing(val smnApi: SmnApi) {
-    abstract suspend fun nextRain(): Either<Exception, NextRain>
+    abstract suspend fun nextRain(city: City): Either<Exception, NextRain>
 }

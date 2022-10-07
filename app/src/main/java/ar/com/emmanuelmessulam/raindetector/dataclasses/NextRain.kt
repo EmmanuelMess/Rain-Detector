@@ -1,4 +1,4 @@
-package ar.com.emmanuelmessulam.raindetector
+package ar.com.emmanuelmessulam.raindetector.dataclasses
 
 import java.util.*
 
