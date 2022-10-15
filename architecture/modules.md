@@ -1,14 +1,19 @@
 # Rain Detector
 
+## Supermodules
+```mermaid
+classDiagram
+Central <.. Exception
+UI <.. Exception
+UI <.. Central
+```
+
 ## Modules
+
+### UI
 
 ```mermaid
 classDiagram
-
-class SharedPreferences {
-    <<provided by Android>>
-}
-
 class Language {
     <<provided by Android>>
 }
@@ -26,6 +31,41 @@ class ListView {
 }
 
 class ListenableWorker {
+    <<provided by Android>>
+}
+
+TextManager <|--o Language
+
+class RefreshNotification {
+    loadAndNotify(i Context, i Processing)
+}
+
+ListenableWorker <|-- RefreshNotification 
+
+ListenableWorker <.. TextManager
+
+class CitiesListView {
+    initializeAdapter(i Activity, i List~City~, *onClick)
+    setSelected(i Int)
+}
+
+ListView <|-- CitiesListView
+
+
+Context <|-- Activity 
+Activity <|-- MainActivity 
+
+MainActivity <.. TextManager
+MainActivity <.. RefreshNotification
+MainActivity <.. CitiesListView
+```
+
+
+### Central
+
+```mermaid
+classDiagram
+class SharedPreferences {
     <<provided by Android>>
 }
 
@@ -76,36 +116,20 @@ Processing <|--o SmnApi
 Processing <.. Probability
 Processing <.. NextRain
 Processing <.. City
+```
 
-TextManager <|--o Language
+### Exception
 
-class RefreshNotification {
-    loadAndNotify(i Context, i Processing)
+```mermaid
+classDiagram
+class Exception {
+    <<provided by Java>>
 }
 
-ListenableWorker <|-- RefreshNotification 
+Exception <|-- RegexBrokenException
+Exception <|-- SmnApiBrokenException
 
-ListenableWorker <.. TextManager
-
-class CitiesListView {
-    initializeAdapter(i Activity, i List~City~, *onClick)
-    setSelected(i Int)
-}
-
-ListView <|-- CitiesListView
-
-
-Context <|-- Activity 
-Activity <|-- MainActivity 
-
-MainActivity <.. TextManager
-MainActivity <.. NextRain
-MainActivity <.. Probability
-MainActivity <.. Processing
-MainActivity <.. SmnApi
-MainActivity <.. City
-MainActivity <.. RefreshNotification
-MainActivity <.. CityPersister
-MainActivity <.. CitiesListView
+RegexBrokenException <|-- CityRegexBrokenException
+RegexBrokenException <|-- ForecastLineRegexBrokenException
 ```
 
